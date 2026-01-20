@@ -23,7 +23,7 @@ export async function POST() {
       where: { id: userId },
       data: {
         isSubscribed: true,
-        subscriptionEnds: subscriptionEnds,
+        subscriptionEnds,
       },
     });
 
