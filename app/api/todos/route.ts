@@ -46,7 +46,7 @@
 //       currentPage: page,
 //       totalPages,
 //     });
-//   } catch (error) {
+//   } catch {
 //     return NextResponse.json(
 //       { error: "Internal Server Error" },
 //       { status: 500 },
@@ -65,6 +65,7 @@
 //     where: { id: userId },
 //     include: { todos: true },
 //   });
+
 //   console.log("User:", user);
 
 //   if (!user) {
@@ -91,10 +92,35 @@
 // }
 
 import { NextRequest, NextResponse } from "next/server";
-import { auth } from "@clerk/nextjs/server";
+import { auth, currentUser } from "@clerk/nextjs/server";
 import prisma from "@/lib/prisma";
 
 const ITEMS_PER_PAGE = 10;
+
+async function ensureDbUser(userId: string) {
+  let dbUser = await prisma.user.findUnique({
+    where: { id: userId },
+    include: { todos: true },
+  });
+
+  if (dbUser) return dbUser;
+
+  const clerkUser = await currentUser();
+  const email = clerkUser?.emailAddresses?.[0]?.emailAddress;
+
+  if (!email) return null;
+
+  dbUser = await prisma.user.create({
+    data: {
+      id: userId,
+      email,
+      isSubscribed: false,
+    },
+    include: { todos: true },
+  });
+
+  return dbUser;
+}
 
 export async function GET(req: NextRequest) {
   const { userId } = await auth();
@@ -111,10 +137,7 @@ export async function GET(req: NextRequest) {
     const todos = await prisma.todo.findMany({
       where: {
         userId,
-        title: {
-          contains: search,
-          mode: "insensitive",
-        },
+        title: { contains: search, mode: "insensitive" },
       },
       orderBy: { createdAt: "desc" },
       take: ITEMS_PER_PAGE,
@@ -124,10 +147,7 @@ export async function GET(req: NextRequest) {
     const totalItems = await prisma.todo.count({
       where: {
         userId,
-        title: {
-          contains: search,
-          mode: "insensitive",
-        },
+        title: { contains: search, mode: "insensitive" },
       },
     });
 
@@ -153,15 +173,13 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
-  const user = await prisma.user.findUnique({
-    where: { id: userId },
-    include: { todos: true },
-  });
-
-  console.log("User:", user);
+  const user = await ensureDbUser(userId);
 
   if (!user) {
-    return NextResponse.json({ error: "User not found" }, { status: 404 });
+    return NextResponse.json(
+      { error: "User not found (no email available from Clerk)" },
+      { status: 404 },
+    );
   }
 
   if (!user.isSubscribed && user.todos.length >= 3) {

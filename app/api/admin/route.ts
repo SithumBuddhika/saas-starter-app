@@ -1,267 +1,3 @@
-// import { NextRequest, NextResponse } from "next/server";
-// import { auth, clerkClient } from "@clerk/nextjs/server";
-// import prisma from "@/lib/prisma";
-
-// const ITEMS_PER_PAGE = 10;
-
-// async function isAdmin(userId: string) {
-//   const client = await clerkClient();
-//   const user = await client.users.getUser(userId);
-//   return (user.publicMetadata as any)?.role === "admin";
-// }
-
-// export async function GET(req: NextRequest) {
-//   const { userId } = await auth();
-
-//   if (!userId || !(await isAdmin(userId))) {
-//     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-//   }
-
-//   const { searchParams } = new URL(req.url);
-//   const email = searchParams.get("email");
-//   const page = parseInt(searchParams.get("page") || "1");
-
-//   try {
-//     let user;
-//     if (email) {
-//       user = await prisma.user.findUnique({
-//         where: { email },
-//         include: {
-//           todos: {
-//             orderBy: { createdAt: "desc" },
-//             take: ITEMS_PER_PAGE,
-//             skip: (page - 1) * ITEMS_PER_PAGE,
-//           },
-//         },
-//       });
-//     }
-
-//     const totalItems = email
-//       ? await prisma.todo.count({ where: { user: { email } } })
-//       : 0;
-
-//     const totalPages = Math.ceil(totalItems / ITEMS_PER_PAGE);
-
-//     return NextResponse.json({ user, totalPages, currentPage: page });
-//   } catch (error) {
-//     return NextResponse.json(
-//       { error: "Internal Server Error" },
-//       { status: 500 },
-//     );
-//   }
-// }
-
-// export async function PUT(req: NextRequest) {
-//   const { userId } = await auth();
-
-//   if (!userId || !(await isAdmin(userId))) {
-//     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-//   }
-
-//   try {
-//     const { email, isSubscribed, todoId, todoCompleted, todoTitle } =
-//       await req.json();
-
-//     if (isSubscribed !== undefined) {
-//       await prisma.user.update({
-//         where: { email },
-//         data: {
-//           isSubscribed,
-//           subscriptionEnds: isSubscribed
-//             ? new Date(Date.now() + 30 * 24 * 60 * 60 * 1000)
-//             : null,
-//         },
-//       });
-//     }
-
-//     if (todoId) {
-//       await prisma.todo.update({
-//         where: { id: todoId },
-//         data: {
-//           completed: todoCompleted !== undefined ? todoCompleted : undefined,
-//           title: todoTitle || undefined,
-//         },
-//       });
-//     }
-
-//     return NextResponse.json({ message: "Update successful" });
-//   } catch (error) {
-//     return NextResponse.json(
-//       { error: "Internal Server Error" },
-//       { status: 500 },
-//     );
-//   }
-// }
-
-// export async function DELETE(req: NextRequest) {
-//   const { userId } = await auth();
-
-//   if (!userId || !(await isAdmin(userId))) {
-//     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-//   }
-
-//   try {
-//     const { todoId } = await req.json();
-
-//     if (!todoId) {
-//       return NextResponse.json(
-//         { error: "Todo ID is required" },
-//         { status: 400 },
-//       );
-//     }
-
-//     await prisma.todo.delete({
-//       where: { id: todoId },
-//     });
-
-//     return NextResponse.json({ message: "Todo deleted successfully" });
-//   } catch (error) {
-//     return NextResponse.json(
-//       { error: "Internal Server Error" },
-//       { status: 500 },
-//     );
-//   }
-// }
-
-// import { NextRequest, NextResponse } from "next/server";
-// import { auth, clerkClient } from "@clerk/nextjs/server";
-// import prisma from "@/lib/prisma";
-
-// const ITEMS_PER_PAGE = 10;
-
-// async function isAdmin(userId: string) {
-//   const client = await clerkClient();
-//   const user = await client.users.getUser(userId);
-//   return (user.publicMetadata as any)?.role === "admin";
-// }
-
-// export async function GET(req: NextRequest) {
-//   const { userId } = await auth();
-
-//   if (!userId) {
-//     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-//   }
-
-//   if (!(await isAdmin(userId))) {
-//     return NextResponse.json({ error: "Forbidden" }, { status: 403 });
-//   }
-
-//   const { searchParams } = new URL(req.url);
-//   const email = searchParams.get("email") || "";
-//   const page = parseInt(searchParams.get("page") || "1");
-
-//   try {
-//     if (!email) {
-//       return NextResponse.json({ user: null, totalPages: 0, currentPage: 1 });
-//     }
-
-//     const user = await prisma.user.findUnique({
-//       where: { email },
-//       include: {
-//         todos: {
-//           orderBy: { createdAt: "desc" },
-//           take: ITEMS_PER_PAGE,
-//           skip: (page - 1) * ITEMS_PER_PAGE,
-//         },
-//       },
-//     });
-
-//     if (!user) {
-//       return NextResponse.json({ user: null, totalPages: 0, currentPage: 1 });
-//     }
-
-//     const totalTodos = await prisma.todo.count({
-//       where: { userId: user.id },
-//     });
-
-//     const totalPages = Math.ceil(totalTodos / ITEMS_PER_PAGE);
-
-//     return NextResponse.json({
-//       user,
-//       totalPages,
-//       currentPage: page,
-//     });
-//   } catch (error) {
-//     return NextResponse.json(
-//       { error: "Internal Server Error" },
-//       { status: 500 },
-//     );
-//   }
-// }
-
-// export async function PUT(req: NextRequest) {
-//   const { userId } = await auth();
-
-//   if (!userId) {
-//     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-//   }
-
-//   if (!(await isAdmin(userId))) {
-//     return NextResponse.json({ error: "Forbidden" }, { status: 403 });
-//   }
-
-//   try {
-//     const { email, todoId, todoCompleted, isSubscribed } = await req.json();
-
-//     if (todoId !== undefined && todoCompleted !== undefined) {
-//       const updatedTodo = await prisma.todo.update({
-//         where: { id: todoId },
-//         data: { completed: todoCompleted },
-//       });
-//       return NextResponse.json(updatedTodo);
-//     }
-
-//     if (isSubscribed !== undefined) {
-//       const updatedUser = await prisma.user.update({
-//         where: { email },
-//         data: {
-//           isSubscribed,
-//           subscriptionEnds: isSubscribed
-//             ? new Date(Date.now() + 30 * 24 * 60 * 60 * 1000)
-//             : null,
-//         },
-//       });
-//       return NextResponse.json(updatedUser);
-//     }
-
-//     return NextResponse.json({ error: "Invalid request" }, { status: 400 });
-//   } catch (error) {
-//     return NextResponse.json(
-//       { error: "Internal Server Error" },
-//       { status: 500 },
-//     );
-//   }
-// }
-
-// export async function DELETE(req: NextRequest) {
-//   const { userId } = await auth();
-
-//   if (!userId) {
-//     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-//   }
-
-//   if (!(await isAdmin(userId))) {
-//     return NextResponse.json({ error: "Forbidden" }, { status: 403 });
-//   }
-
-//   try {
-//     const { todoId } = await req.json();
-
-//     await prisma.todo.delete({
-//       where: { id: todoId },
-//     });
-
-//     return NextResponse.json({ message: "Todo deleted successfully" });
-//   } catch (error) {
-//     return NextResponse.json(
-//       { error: "Internal Server Error" },
-//       { status: 500 },
-//     );
-//   }
-// }
-
-/////////////////
-
 import { NextRequest, NextResponse } from "next/server";
 import { auth, clerkClient } from "@clerk/nextjs/server";
 import prisma from "@/lib/prisma";
@@ -277,22 +13,18 @@ async function isAdmin(userId: string) {
 export async function GET(req: NextRequest) {
   const { userId } = await auth();
 
-  if (!userId) {
+  if (!userId)
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-  }
-
-  if (!(await isAdmin(userId))) {
+  if (!(await isAdmin(userId)))
     return NextResponse.json({ error: "Forbidden" }, { status: 403 });
-  }
 
   const { searchParams } = new URL(req.url);
   const email = searchParams.get("email") || "";
   const page = parseInt(searchParams.get("page") || "1");
 
   try {
-    if (!email) {
+    if (!email)
       return NextResponse.json({ user: null, totalPages: 0, currentPage: 1 });
-    }
 
     const user = await prisma.user.findUnique({
       where: { email },
@@ -305,22 +37,14 @@ export async function GET(req: NextRequest) {
       },
     });
 
-    if (!user) {
+    if (!user)
       return NextResponse.json({ user: null, totalPages: 0, currentPage: 1 });
-    }
 
-    const totalTodos = await prisma.todo.count({
-      where: { userId: user.id },
-    });
-
+    const totalTodos = await prisma.todo.count({ where: { userId: user.id } });
     const totalPages = Math.ceil(totalTodos / ITEMS_PER_PAGE);
 
-    return NextResponse.json({
-      user,
-      totalPages,
-      currentPage: page,
-    });
-  } catch (error) {
+    return NextResponse.json({ user, totalPages, currentPage: page });
+  } catch {
     return NextResponse.json(
       { error: "Internal Server Error" },
       { status: 500 },
@@ -331,13 +55,10 @@ export async function GET(req: NextRequest) {
 export async function PUT(req: NextRequest) {
   const { userId } = await auth();
 
-  if (!userId) {
+  if (!userId)
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-  }
-
-  if (!(await isAdmin(userId))) {
+  if (!(await isAdmin(userId)))
     return NextResponse.json({ error: "Forbidden" }, { status: 403 });
-  }
 
   try {
     const { email, todoId, todoCompleted, isSubscribed } = await req.json();
@@ -364,7 +85,7 @@ export async function PUT(req: NextRequest) {
     }
 
     return NextResponse.json({ error: "Invalid request" }, { status: 400 });
-  } catch (error) {
+  } catch {
     return NextResponse.json(
       { error: "Internal Server Error" },
       { status: 500 },
@@ -375,23 +96,17 @@ export async function PUT(req: NextRequest) {
 export async function DELETE(req: NextRequest) {
   const { userId } = await auth();
 
-  if (!userId) {
+  if (!userId)
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-  }
-
-  if (!(await isAdmin(userId))) {
+  if (!(await isAdmin(userId)))
     return NextResponse.json({ error: "Forbidden" }, { status: 403 });
-  }
 
   try {
     const { todoId } = await req.json();
 
-    await prisma.todo.delete({
-      where: { id: todoId },
-    });
-
+    await prisma.todo.delete({ where: { id: todoId } });
     return NextResponse.json({ message: "Todo deleted successfully" });
-  } catch (error) {
+  } catch {
     return NextResponse.json(
       { error: "Internal Server Error" },
       { status: 500 },
