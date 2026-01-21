@@ -157,3 +157,8 @@ Copy the webhook signing secret and set it as:
 ```
 WEBHOOK_SECRET="whsec_..."
 ```
+
+## 🔎 Contact
+
+- Email: [officialsithumbuddhika@gmail.com](mailto:officialsithumbuddhika@gmail.com)
+- LinkedIn: [Sithum Buddhika Jayalal](https://www.linkedin.com/in/sithum-buddhika-jayalal-827860341)
