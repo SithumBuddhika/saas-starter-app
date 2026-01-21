@@ -1,8 +1,14 @@
 import type { Metadata } from "next";
-import { ClerkProvider } from "@clerk/nextjs";
+import {
+  ClerkProvider,
+  SignInButton,
+  SignUpButton,
+  SignedOut,
+} from "@clerk/nextjs";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { Toaster } from "@/components/ui/toaster";
+import { ThemeProvider } from "@/components/theme-provider";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -30,8 +36,33 @@ export default function RootLayout({
         <body
           className={`${geistSans.variable} ${geistMono.variable} antialiased`}
         >
-          {children}
-          <Toaster />
+          <ThemeProvider>
+            {/* Signed-out top bar only */}
+            <SignedOut>
+              <header className="sticky top-0 z-50 border-b border-white/10 bg-background/70 backdrop-blur">
+                <div className="mx-auto flex h-14 max-w-6xl items-center justify-between px-4">
+                  <div className="flex items-center gap-2">
+                    <div className="h-2.5 w-2.5 rounded-full bg-emerald-400 shadow-[0_0_18px_rgba(52,211,153,.75)]" />
+                    <span className="font-semibold tracking-tight">
+                      TodoMaster
+                    </span>
+                  </div>
+
+                  <div className="flex items-center gap-2">
+                    <SignInButton />
+                    <SignUpButton>
+                      <button className="rounded-full bg-gradient-to-r from-violet-500 to-cyan-400 px-4 py-2 text-sm font-semibold text-black shadow-[0_10px_30px_rgba(34,211,238,.20)] hover:opacity-95">
+                        Sign Up
+                      </button>
+                    </SignUpButton>
+                  </div>
+                </div>
+              </header>
+            </SignedOut>
+
+            {children}
+            <Toaster />
+          </ThemeProvider>
         </body>
       </html>
     </ClerkProvider>

@@ -9,7 +9,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Pagination } from "@/components/Pagination";
 import { useDebounceValue } from "usehooks-ts";
-import { Shield, Search, Sparkles } from "lucide-react";
+import { Shield, Search } from "lucide-react";
 
 interface UserWithTodos extends User {
   todos: Todo[];
@@ -35,8 +35,8 @@ export default function AdminDashboard() {
           `/api/admin?email=${encodeURIComponent(debouncedEmail)}&page=${page}`,
         );
         if (!response.ok) throw new Error("Failed to fetch user data");
-        const data = await response.json();
 
+        const data = await response.json();
         setUser(data.user);
         setTotalPages(data.totalPages);
         setCurrentPage(data.currentPage);
@@ -145,35 +145,30 @@ export default function AdminDashboard() {
   };
 
   return (
-    <div className="relative">
-      {/* Background glow */}
-      <div className="pointer-events-none absolute inset-0 -z-10 overflow-hidden">
-        <div className="absolute -top-24 left-1/2 h-[520px] w-[520px] -translate-x-1/2 rounded-full bg-emerald-400/15 blur-[90px]" />
-        <div className="absolute -top-10 right-[-120px] h-[520px] w-[520px] rounded-full bg-blue-500/15 blur-[90px]" />
-        <div className="absolute bottom-[-160px] left-[-140px] h-[520px] w-[520px] rounded-full bg-cyan-400/10 blur-[90px]" />
-      </div>
-
-      <div className="mx-auto max-w-5xl px-4 py-8 sm:py-10 space-y-6">
+    <div className="min-h-screen bg-muted/30">
+      <div className="mx-auto max-w-5xl px-4 py-6 sm:py-10 space-y-6">
         {/* Header */}
-        <div className="rounded-3xl border border-white/10 bg-background/60 p-6 backdrop-blur sm:p-8">
-          <div className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-3 py-1 text-xs text-muted-foreground">
-            <Shield className="h-3.5 w-3.5" />
-            Admin Console
-            <span className="mx-1 text-white/20">•</span>
-            <Sparkles className="h-3.5 w-3.5" />
-            Moderation
-          </div>
-
-          <h1 className="mt-3 text-2xl font-semibold tracking-tight sm:text-3xl">
-            Admin Dashboard
-          </h1>
-          <p className="mt-1 text-sm text-muted-foreground">
-            Search users, manage subscriptions, and moderate todos.
-          </p>
-        </div>
+        <Card className="border-border bg-card">
+          <CardContent className="p-5 sm:p-6">
+            <div className="flex items-start justify-between gap-4">
+              <div>
+                <p className="inline-flex items-center gap-2 text-xs font-medium text-muted-foreground">
+                  <Shield className="h-4 w-4" />
+                  Admin
+                </p>
+                <h1 className="mt-1 text-2xl font-semibold tracking-tight sm:text-3xl">
+                  Admin Dashboard
+                </h1>
+                <p className="mt-1 text-sm text-muted-foreground">
+                  Search users, manage subscriptions, and moderate todos.
+                </p>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
 
         {/* Search */}
-        <Card className="border-white/10 bg-background/60 backdrop-blur">
+        <Card className="border-border bg-card">
           <CardHeader>
             <CardTitle>Search User</CardTitle>
           </CardHeader>
@@ -189,7 +184,7 @@ export default function AdminDashboard() {
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   placeholder="Enter user email"
-                  className="pl-9"
+                  className="h-11 pl-9"
                   required
                 />
               </div>
@@ -200,18 +195,16 @@ export default function AdminDashboard() {
           </CardContent>
         </Card>
 
+        {/* Loading / Results */}
         {isLoading ? (
-          <Card className="border-white/10 bg-background/60 backdrop-blur">
-            <CardContent className="py-10 text-center">
-              <div className="mx-auto mb-3 h-10 w-10 animate-pulse rounded-2xl bg-white/10" />
-              <p className="text-sm text-muted-foreground">
-                Loading user data…
-              </p>
+          <Card className="border-border bg-card">
+            <CardContent className="py-10 text-center text-muted-foreground">
+              Loading user data…
             </CardContent>
           </Card>
         ) : user ? (
           <>
-            <Card className="border-white/10 bg-background/60 backdrop-blur">
+            <Card className="border-border bg-card">
               <CardHeader>
                 <CardTitle>User Details</CardTitle>
               </CardHeader>
@@ -241,7 +234,7 @@ export default function AdminDashboard() {
               </CardContent>
             </Card>
 
-            <Card className="border-white/10 bg-background/60 backdrop-blur">
+            <Card className="border-border bg-card">
               <CardHeader>
                 <CardTitle>User Todos</CardTitle>
               </CardHeader>
@@ -267,7 +260,7 @@ export default function AdminDashboard() {
                     />
                   </>
                 ) : (
-                  <div className="rounded-2xl border border-white/10 bg-white/5 p-6 text-center text-sm text-muted-foreground">
+                  <div className="rounded-2xl border border-border bg-muted/30 p-6 text-center text-sm text-muted-foreground">
                     This user has no todos.
                   </div>
                 )}
@@ -275,7 +268,7 @@ export default function AdminDashboard() {
             </Card>
           </>
         ) : debouncedEmail ? (
-          <Card className="border-white/10 bg-background/60 backdrop-blur">
+          <Card className="border-border bg-card">
             <CardContent className="py-10 text-center text-muted-foreground">
               No user found with this email.
             </CardContent>

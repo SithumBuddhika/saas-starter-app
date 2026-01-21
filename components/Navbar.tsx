@@ -2,27 +2,45 @@
 
 import Link from "next/link";
 import { useUser, useClerk } from "@clerk/nextjs";
-import { LogOut, CreditCard, LayoutDashboard, Shield } from "lucide-react";
+import {
+  LogOut,
+  CreditCard,
+  LayoutDashboard,
+  Shield,
+  Sun,
+  Moon,
+} from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
+  DropdownMenuSeparator,
 } from "@/components/ui/dropdown-menu";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
+import { useTheme } from "next-themes";
+import { useEffect, useState } from "react";
 
 export default function Navbar() {
   const { user } = useUser();
   const { signOut } = useClerk();
 
+  // theme toggle (safe with SSR)
+  const { theme, setTheme, systemTheme } = useTheme();
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => setMounted(true), []);
+
+  const currentTheme =
+    theme === "system" ? (systemTheme ?? "light") : (theme ?? "light");
+
   return (
-    <nav className="sticky top-0 z-50 border-b border-white/10 bg-background/60 backdrop-blur">
+    <nav className="sticky top-0 z-50 border-b border-border bg-background/70 backdrop-blur">
       <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-4">
         <Link href="/dashboard" className="flex items-center gap-3">
-          <div className="h-10 w-10 rounded-2xl bg-gradient-to-br from-emerald-400 to-blue-500 p-[1px] shadow-[0_0_0_1px_rgba(255,255,255,.10)]">
+          <div className="h-10 w-10 rounded-2xl bg-gradient-to-br from-emerald-400 to-blue-500 p-[1px] shadow-sm">
             <div className="flex h-full w-full items-center justify-center rounded-2xl bg-background">
-              <div className="h-2.5 w-2.5 rounded-full bg-emerald-400 shadow-[0_0_18px_rgba(52,211,153,.75)]" />
+              <div className="h-2.5 w-2.5 rounded-full bg-emerald-400 shadow-[0_0_18px_rgba(52,211,153,.55)]" />
             </div>
           </div>
 
@@ -57,7 +75,6 @@ export default function Navbar() {
             </Link>
           </Button>
 
-          {/* This link is harmless even if not used by everyone */}
           <Button
             asChild
             variant="ghost"
@@ -68,6 +85,41 @@ export default function Navbar() {
               Admin
             </Link>
           </Button>
+
+          {/* Theme toggle */}
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button
+                variant="outline"
+                size="icon"
+                className="h-10 w-10 rounded-full"
+                aria-label="Toggle theme"
+              >
+                {!mounted ? (
+                  <span className="h-4 w-4" />
+                ) : currentTheme === "dark" ? (
+                  <Moon className="h-4 w-4" />
+                ) : (
+                  <Sun className="h-4 w-4" />
+                )}
+              </Button>
+            </DropdownMenuTrigger>
+
+            <DropdownMenuContent align="end" className="w-44">
+              <DropdownMenuItem onClick={() => setTheme("light")}>
+                <Sun className="mr-2 h-4 w-4" />
+                Light
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => setTheme("dark")}>
+                <Moon className="mr-2 h-4 w-4" />
+                Dark
+              </DropdownMenuItem>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem onClick={() => setTheme("system")}>
+                System
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
 
           {user ? (
             <DropdownMenu>
@@ -82,10 +134,7 @@ export default function Navbar() {
                 </Button>
               </DropdownMenuTrigger>
 
-              <DropdownMenuContent
-                align="end"
-                className="w-64 border-white/10 bg-background/80 backdrop-blur"
-              >
+              <DropdownMenuContent align="end" className="w-64">
                 <div className="px-3 py-2">
                   <p className="text-sm font-medium leading-none">
                     {user.fullName || "Account"}
