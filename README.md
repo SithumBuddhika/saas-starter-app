@@ -4,6 +4,14 @@ A modern **todo + subscription demo** built with **Next.js 16**, **Clerk Auth**,
 
 ---
 
+> **Notice:**  
+> This project was developed as part of a **Web Development / Full-Stack course assignment** to practice and understand **Next.js (App Router)**, **TypeScript**, and **modern SaaS architecture**.  
+> It demonstrates **authentication with Clerk**, **database integration using Neon PostgreSQL and Prisma**, **API routes**, **middleware**, and **role-based dashboards**.  
+>  
+> The project is intended for **educational and learning purposes only** and is **not meant for production use**.
+
+---
+
 ## ✨ Features
 
 ✅ **Clerk Authentication** (Sign In / Sign Up)  
