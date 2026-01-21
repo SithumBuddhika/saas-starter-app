@@ -1,36 +1,159 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# ✅ TodoMaster 🚀
 
-## Getting Started
+A modern **todo + subscription demo** built with **Next.js 16**, **Clerk Auth**, **Neon Postgres**, and **Prisma** — featuring a clean UI, pagination, search, and role-based admin tools.
 
-First, run the development server:
+---
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+## ✨ Features
+
+✅ **Clerk Authentication** (Sign In / Sign Up)  
+✅ **User Dashboard**
+
+- Create todos
+- Complete / undo
+- Delete
+- Search + pagination  
+  ✅ **Subscription Gate**
+- Free users: max **3 todos**
+- Subscribed users: unlimited  
+  ✅ **Admin Dashboard**
+- Search user by email
+- View user todos
+- Update subscription
+- Moderate todos  
+  ✅ **Webhooks**
+- On `user.created`, user is automatically inserted into Neon DB  
+  ✅ **Dark/Light Mode Support** 🌙☀️  
+  ✅ Fully **responsive UI** 📱💻
+
+---
+
+## 🧱 Tech Stack
+
+- ⚡ **Next.js 16 (App Router)**
+- 🔐 **Clerk**
+- 🗃️ **Neon (PostgreSQL)**
+- 🔷 **Prisma ORM**
+- 🎨 **Tailwind CSS + shadcn/ui**
+- 🧩 **Svix Webhooks**
+
+---
+
+## 📂 Project Structure
+
+```txt
+saas-starter-app/
+├─ app/
+│  ├─ api/
+│  │  ├─ admin/
+│  │  │  └─ route.ts
+│  │  ├─ subscription/
+│  │  │  └─ route.ts
+│  │  ├─ todos/
+│  │  │  ├─ route.ts
+│  │  │  └─ [id]/
+│  │  │     └─ route.ts
+│  │  └─ webhook/
+│  │     └─ register/
+│  │        └─ route.ts
+│  ├─ (authenticated)/
+│  │  ├─ layout.tsx
+│  │  ├─ dashboard/
+│  │  │  └─ page.tsx
+│  │  ├─ subscribe/
+│  │  │  └─ page.tsx
+│  │  └─ admin/
+│  │     └─ dashboard/
+│  │        └─ page.tsx
+│  ├─ sign-in/
+│  │  └─ [[...rest]]/
+│  │     └─ page.tsx
+│  ├─ sign-up/
+│  │  └─ [[...rest]]/
+│  │     └─ page.tsx
+│  ├─ layout.tsx
+│  └─ page.tsx
+│
+├─ components/
+│  ├─ Navbar.tsx
+│  ├─ TodoItem.tsx
+│  ├─ TodoForm.tsx
+│  ├─ Pagination.tsx
+│  ├─ BackButton.tsx
+│  └─ ui/ (shadcn components)
+│
+├─ hooks/
+│  └─ use-toast.ts
+│
+├─ lib/
+│  └─ prisma.ts
+│
+├─ prisma/
+│  └─ schema.prisma
+│
+├─ middleware.ts
+├─ package.json
+└─ README.md
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+---
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## 🔑 Environment Variables
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+Create a .env.local file:
 
-## Learn More
+```
+DATABASE_URL="postgresql://USER:PASSWORD@HOST/DB?sslmode=require"
 
-To learn more about Next.js, take a look at the following resources:
+NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY="pk_test_..."
+CLERK_SECRET_KEY="sk_test_..."
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+WEBHOOK_SECRET="whsec_..."
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+```
 
-## Deploy on Vercel
+## ▶️ Run Locally
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+```
+npm install
+npx prisma generate
+npm run dev
+```
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Open:
+📍 http://localhost:3000
+
+---
+
+## 🧪 Prisma Setup
+
+If you are using migrations:
+
+```
+npx prisma migrate dev --name init
+```
+
+For production deploy:
+
+```
+npx prisma migrate deploy
+```
+
+## 🔔 Clerk Webhook Setup
+
+In Clerk Dashboard → Webhooks:
+
+Endpoint URL:
+
+```
+https://YOUR-DEPLOYED-URL.vercel.app/api/webhook/register
+```
+
+Subscribe event:
+✅ user.created
+
+Copy the webhook signing secret and set it as:
+
+```
+WEBHOOK_SECRET="whsec_..."
+```
