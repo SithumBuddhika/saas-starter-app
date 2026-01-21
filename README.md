@@ -5,7 +5,7 @@ A modern **todo + subscription demo** built with **Next.js 16**, **Clerk Auth**,
 ---
 
 <p align="center">
-  <img src="./screenshots/1.png" alt="Login Page UI" width="800"/>
+  <img src="./screenshots/1.png" alt="Landing Page" width="800"/>
 </p>
 ---
 
@@ -20,7 +20,7 @@ A modern **todo + subscription demo** built with **Next.js 16**, **Clerk Auth**,
 - Search + pagination
 
 <p align="center">
-  <img src="./screenshots/2.png" alt="Login Page UI" width="800"/>
+  <img src="./screenshots/2.png" alt="Todo Page" width="800"/>
 </p>
 ---
 
@@ -30,7 +30,7 @@ A modern **todo + subscription demo** built with **Next.js 16**, **Clerk Auth**,
 - Subscribed users: unlimited
 
 <p align="center">
-  <img src="./screenshots/3.png" alt="Login Page UI" width="800"/>
+  <img src="./screenshots/3.png" alt="subscription page" width="800"/>
 </p>
 ---
 
