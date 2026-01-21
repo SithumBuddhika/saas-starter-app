@@ -4,6 +4,11 @@ A modern **todo + subscription demo** built with **Next.js 16**, **Clerk Auth**,
 
 ---
 
+<p align="center">
+  <img src="./screenshots/1.png" alt="Login Page UI" width="800"/>
+</p>
+---
+
 ## ✨ Features
 
 ✅ **Clerk Authentication** (Sign In / Sign Up)  
@@ -12,11 +17,25 @@ A modern **todo + subscription demo** built with **Next.js 16**, **Clerk Auth**,
 - Create todos
 - Complete / undo
 - Delete
-- Search + pagination  
-  ✅ **Subscription Gate**
+- Search + pagination
+
+<p align="center">
+  <img src="./screenshots/2.png" alt="Login Page UI" width="800"/>
+</p>
+---
+
+✅ **Subscription Gate**
+
 - Free users: max **3 todos**
-- Subscribed users: unlimited  
-  ✅ **Admin Dashboard**
+- Subscribed users: unlimited
+
+<p align="center">
+  <img src="./screenshots/3.png" alt="Login Page UI" width="800"/>
+</p>
+---
+
+✅ **Admin Dashboard**
+
 - Search user by email
 - View user todos
 - Update subscription
