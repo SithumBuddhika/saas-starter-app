@@ -1,23 +1,23 @@
 import { clerkMiddleware, createRouteMatcher } from "@clerk/nextjs/server";
 import { NextResponse } from "next/server";
 
-const isPublicRoute = createRouteMatcher([
-  "/",
-  "/sign-in(.*)",
-  "/sign-up(.*)",
-  "/api/webhook/register",
-]);
+// Public PAGES (so signed-in users can be redirected away from these)
+const isPublicPage = createRouteMatcher(["/", "/sign-in(.*)", "/sign-up(.*)"]);
+
+// Public API routes (should NEVER be redirected just because user is signed in)
+const isPublicApi = createRouteMatcher(["/api/webhook/register"]);
 
 export default clerkMiddleware(async (auth, req) => {
-  const { userId, sessionClaims, redirectToSignIn } = await auth();
+  const { userId, sessionClaims } = await auth();
 
-  // Not signed in + not public route => go to sign in
-  if (!userId && !isPublicRoute(req)) {
-    // return redirectToSignIn({ returnBackUrl: req.url });
+  const isPublic = isPublicPage(req) || isPublicApi(req);
+
+  // Not signed in + not public => go to sign in
+  if (!userId && !isPublic) {
     return NextResponse.redirect(new URL("/sign-in", req.url));
   }
 
-  // role from publicMetadata (in session token claims)
+  // role from sessionClaims publicMetadata
   const role = (sessionClaims?.publicMetadata as any)?.role as
     | "admin"
     | undefined;
@@ -32,8 +32,8 @@ export default clerkMiddleware(async (auth, req) => {
     return NextResponse.redirect(new URL("/dashboard", req.url));
   }
 
-  // Signed-in users shouldn't stay on public routes
-  if (userId && isPublicRoute(req)) {
+  // Signed-in users shouldn't stay on public PAGES (but allow public APIs)
+  if (userId && isPublicPage(req)) {
     return NextResponse.redirect(
       new URL(role === "admin" ? "/admin/dashboard" : "/dashboard", req.url),
     );
